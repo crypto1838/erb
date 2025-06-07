@@ -1,4 +1,7 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% load humanize %}
+<!--  Block title welcome -->
+{% block title %} Welcome {% endblock title %}
+{% block content %}
     <!-- Showcase -->
     <section id="showcase">
       <div class="container text-center">
@@ -11,8 +14,8 @@
               tempore! Consectetur, id commodi!
             </p>
             <div class="search">
-{% comment %}  {% endcomment %}
-              <form action="search.html">
+              <form action={% url 'listings:search' %}>
+              {% comment %} <form action="search.html"> {% endcomment %}
                 <!-- Form Row 1 -->
                 <div class="form-row">
                   <div class="col-md-4 mb-3">
@@ -26,39 +29,29 @@
                   </div>
 
                   <div class="col-md-4 mb-3">
-                    <label class="sr-only">street</label>
+                    {% comment %} <label class="sr-only">street</label> {% endcomment %}
+                    <label class="sr-only">Title</label>
                     <input
                       type="text"
-                      name="street"
+                      {% comment %} name="street" {% endcomment %}
+                      name="title"
                       class="form-control"
-                      placeholder="Street"
+                      {% comment %} placeholder="Street" {% endcomment %}
+                      placeholder="Title"
                     />
                   </div>
 
-             {% comment %}  {% endcomment %}     <div class="col-md-4 mb-3">
+             {% comment %}  {% endcomment %}     
+             <div class="col-md-4 mb-3">
                     <label class="sr-only">District</label>
                     <select name="district" class="form-control">
                       <option selected="true" disabled="disabled">
                         District (All)
                       </option>
-                      <option value="IL">Islands</option>
-                      <option value="KT">Kwai Tsing</option>
-                      <option value="NR">North</option>
-                      <option value="SK">Sai Kung</option>
-                      <option value="ST">Sha Tin</option>
-                      <option value="TP">Tai Po</option>
-                      <option value="TW">Tsuen Wan</option>
-                      <option value="TM">Tuen Mun</option>
-                      <option value="YL">Yuen Long</option>
-                      <option value="KC">Kowloon City</option>
-                      <option value="KW">Kwun Tong</option>
-                      <option value="SS">Sham Shui Po</option>
-                      <option value="WT">Wong Tai Sin</option>
-                      <option value="YM">Yau Tsim Mong</option>
-                      <option value="CW">Central & Western</option>
-                      <option value="ER">Eastern</option>
-                      <option value="SR">Southern</option>
-                      <option value="WC">Wan Chai</option>
+                      {% for key,value in district_choices.items %}
+                      <option value="{{key}}">{{value}}</option>
+                      {% endfor %}
+                      
                     </select>
                   </div>
                 </div>
@@ -70,16 +63,10 @@
                       <option selected="true" disabled="disabled">
                         Bedrooms (All)
                       </option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
+                      {% for key,value in bedroom_choices.items %}
+                      <option value="{{key}}">{{value}}</option>
+                      {% endfor %}
+                      
                     </select>
                   </div>
                   <div class="col-md-6 mb-3">
@@ -87,16 +74,10 @@
                       <option selected="true" disabled="disabled">
                         Max Price (Any)
                       </option>
-                      <option value="1000000">$1,000,000</option>
-                      <option value="2000000">$2,000,000</option>
-                      <option value="3000000">$3,000,000</option>
-                      <option value="4000000">$4,000,000</option>
-                      <option value="5000000">$5,000,000</option>
-                      <option value="6000000">$6,000,000</option>
-                      <option value="7000000">$7,000,000</option>
-                      <option value="8000000">$8,000,000</option>
-                      <option value="9000000">$9,000,000</option>
-                      <option value="10000000">$10M+</option>
+                      {% for key,value in price_choices.items %}
+                      <option value="{{key}}">{{value}}</option>
+                      {% endfor %}
+                      
                     </select>
                   </div>
                 </div>
@@ -113,181 +94,76 @@
     <section id="listings" class="py-5">
       <div class="container">
         <h3 class="text-center mb-3">Latest Listings</h3>
-        <div class="row">
-          <!-- Listing 1 -->
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card listing-preview">
-              <img
-                class="card-img-top"
-{% comment %}  {% endcomment %}
-                src="assets/img/homes/home-1.jpg"
-                alt=""
-              />
-              <div class="card-img-overlay">
-                <h2>
-                  <span class="badge badge-secondary text-white"
-                    >$4,900,000</span
-                  >
-                </h2>
+        <div class="row"> 
+      {% if listings %}
+        {% for listing in listings%}
+        <!-- Listing 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img
+              class="card-img-top"
+              {% comment %} src="assets/img/homes/home-1.jpg" {% endcomment %}
+              src={{listing.photo_main.url}} alt=""/>
+            <div class="card-img-overlay">
+              <h2>
+                {% comment %} <span class="badge badge-secondary text-white">$4,900,000</span> {% endcomment %}
+                <span class="badge badge-secondary text-white">${{listing.price | intword}}</span>
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="listing-heading text-center">
+                {% comment %} <h4 class="text-primary">45 Prince Street</h4> {% endcomment %}
+                <h4 class="text-primary">{{listing.title | title}}</h4>
+                <p>
+                  {% comment %} <i class="fas fa-map-marker text-secondary"></i> Yau Tsim {% endcomment %}
+                  <i class="fas fa-map-marker text-secondary"></i> {{listing.district | title }}
+                </p>
               </div>
-              <div class="card-body">
-                <div class="listing-heading text-center">
-                  <h4 class="text-primary">45 Prince Street</h4>
-                  <p>
-                    <i class="fas fa-map-marker text-secondary"></i> Yau Tsim
-                    Mong
-                  </p>{% comment %}  {% endcomment %}
+              <hr />
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  {% comment %} <i class="fas fa-th-large"></i> Sqft: 2500 {% endcomment %}
+                  <i class="fas fa-th-large"></i> Sqft: {{listing.sqrt | intcomma}}
                 </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-th-large"></i> Sqft: 2500
-                  </div>
-                  <div class="col-6">
-                    <i {% comment %}  {% endcomment %}class="fas fa-dumbbell"></i> ClubHouse: 2
-                  </div>
+                <div class="col-6">
+                  {% comment %} <i class="fas fa-dumbbell"></i> ClubHouse: 2 {% endcomment %}
+                  <i class="fas fa-dumbbell"></i> ClubHouse: {{listing.clubhouse}}
                 </div>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-bed"></i> Bedrooms: 3
-                  </div>
-                  <div class="col-6">
-                    <i class="fas fa-bath"></i> Bathrooms: 2
-                  </div>
-                </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6"><i class="fas fa-user"></i> Kyle Chan</div>
-                </div>
-                <div class="row text-secondary pb-2">
-                  <div class="col-6">
-                    <i class="fas fa-clock"></i> 5 days ago
-                  </div>
-                </div>
-                <hr />
-                <a href="listing.html" class="btn btn-primary btn-block"
-                  >More Info</a
-                >
               </div>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  {% comment %} <i class="fas fa-bed"></i> Bedrooms: 3 {% endcomment %}
+                  <i class="fas fa-bed"></i> Bedrooms: {{listing.bedrooms}}
+                </div>
+                <div class="col-6">
+                  <i class="fas fa-bath"></i> Bathrooms: {{listing.bathrooms}}
+                </div>
+              </div>
+              <hr />
+              <div class="row py-2 text-secondary">
+                {% comment %} <div class="col-6"><i class="fas fa-user"></i> Kyle Chan</div> {% endcomment %}
+                <div class="col-6"><i class="fas fa-user"></i> {{listing.realtor.name}}</div>
+              </div>
+              <div class="row text-secondary pb-2">
+                <div class="col-6">
+                  {% comment %} <i class="fas fa-clock"></i> 5 days ago {% endcomment %}
+                  <i class="fas fa-clock"></i> {{listing.list_date | timesince}}
+                </div>
+              </div>
+              <hr />
+              {% comment %} <a href="listing.html" class="btn btn-primary btn-block" {% endcomment %}
+              <a href={% url "listings:listing" listing.id %} class="btn btn-primary btn-block"
+                >More Info</a
+              >
             </div>
           </div>
-
-          <!-- Listing 2 -->
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card listing-preview">
-              <img
-                class="card-img-top"
-{% comment %}  {% endcomment %}                
-                src="assets/img/homes/home-2.jpg"
-                alt=""
-              />
-              <div class="card-img-overlay">
-                <h2>
-                  <span class="badge badge-secondary text-white"
-                    >$5,500,000</span
-                  >
-                </h2>
-              </div>
-              <div class="card-body">
-                <div class="listing-heading text-center">
-                  <h4 class="text-primary">Hung Hom Estate</h4>
-                  <p>
-                    <i class="fas fa-map-marker text-secondary"></i> Kowloon
-                    City
-                  </p>
-                </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-th-large"></i> Sqft: 3200
-                  </div>
-                  <div class="col-6">
-                    <i class="fas f
-                </div>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas f">
-                    <i class="fas fa-bath"></i> Bathrooms: 2.5
-                  </div>
-                </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-user"></i> Mark Hudson
-                  </div>
-                </div>
-                <div class="row text-secondary pb-2">
-                  <div class="col-6">
-                    <i class="fas fa-clock"></i> 5 days ago
-                  </div>
-                </div>
-                <hr />
-{% comment %}  {% endcomment %}{% comment %}  {% endcomment %}                
-                <a href="listing.html" class="btn btn-primary btn-block"
-                  >More Info</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Listing 3 -->
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card listing-preview">
-              <img
-                class="card-img-top"
-{% comment %}  {% endcomment %}                
-                src="assets/img/homes/home-3.jpg"
-                alt=""
-              />
-              <div class="card-img-overlay">
-                <h2>
-                  <span class="badge badge-secondary text-white"
-                    >$5,800,000</span
-                  >
-                </h2>
-              </div>
-              <div class="card-body">
-                <div class="listing-heading text-center">
-                  <h4 class="text-primary">Mei Foo</h4>
-                  <p>
-                    <i class="fas fa-map-marker text-secondary"></i> Sham Shui
-                    Po
-                  </p>
-                </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-th-large"></i> Sqft: 3107
-                  </div>
-                  <div class="col-6">
-                    <i class="fas fa-dumbbell"></i> ClubHouse: 0
-                  </div>
-                </div>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6">
-                    <i class="fas fa-bed"></i> Bedrooms: 4
-                  </div>
-                  <div class="col-6">
-                   <i class="fas fa-bath"></i> Bathrooms: 3
-                  </div>
-                </div>
-                <hr />
-                <div class="row py-2 text-secondary">
-                  <div class="col-6"><i class="fas fa-user"></i> Mark Lee</div>
-                </div>
-                <div class="row text-secondary pb-2">
-                  <div class="col-6">
-                    <i class="fas fa-clock"></i> 5 days ago
-                  </div>
-                </div>
-                <hr />
-{% comment %}  {% endcomment %}                
-                <a href="listing.html" class="btn btn-primary btn-block"
-                 {% comment %}  {% endcomment %} >More Info</a
-                >
-              </div>
-            </div>
-          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-md-12">
+        <h2> No Listing available </h2>
+        </div>
+        {% endif %}
         </div>
       </div>
     </section>

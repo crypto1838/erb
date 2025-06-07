@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from django.contrib.messages import constants as messages
 from pathlib import Path
-
-# add !
 from dotenv import load_dotenv
 import os
+
 load_dotenv() 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,10 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.humanize",
     "debug_toolbar",
     'pages.apps.PagesConfig',  # register app 
     'listings.apps.ListingsConfig',
     'realtors.apps.RealtorsConfig',
+    'accounts.apps.AccountsConfig',
+    'contacts.apps.ContactsConfig',
 ]
 
 MIDDLEWARE = [
@@ -114,6 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Hong_Kong'
@@ -144,3 +148,15 @@ INTERNAL_IPS = [
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
+
+MSEEAGE_TAGS = {
+    messages.ERROR : 'danger',  
+    messages.SUCCESS : 'success'
+}
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
